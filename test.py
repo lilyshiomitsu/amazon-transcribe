@@ -7,19 +7,17 @@ from amazon_transcribe.model import TranscriptEvent
 client = TranscribeStreamingClient(region="us-east-1")
 
 class MyEventHandler(TranscriptResultStreamHandler):
-    def __init__(self, output_stream):
+    def __init__(self, output_stream, file_path="transcript.txt"):
         super().__init__(output_stream)
-        self.last_transcript = ""
+        self.file_path = file_path
         
     async def handle_transcript_event(self, transcript_event: TranscriptEvent):
         results = transcript_event.transcript.results
         for result in results:
             if result.alternatives:
-                transcript = result.alternatives[0].transcript.strip()
-                # Only print if different from last
-                if transcript and transcript != self.last_transcript:
-                    print(transcript)
-                    self.last_transcript = transcript
+                transcript = result.alternatives[0].transcript
+                with open(self.file_path, "a") as f:
+                    f.write(transcript + "\n")
 
 async def mic_stream():
     # Open a stream to your microphone
