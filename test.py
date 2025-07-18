@@ -7,6 +7,10 @@ from amazon_transcribe.model import TranscriptEvent
 client = TranscribeStreamingClient(region="us-east-1")
 
 class MyEventHandler(TranscriptResultStreamHandler):
+    def __init__(self, output_stream):
+        super().__init__(output_stream)
+        self.last_transcript = ""
+        
     async def handle_transcript_event(self, transcript_event: TranscriptEvent):
         results = transcript_event.transcript.results
         for result in results:
